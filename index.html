@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart URL Risk Analyzer with Nmap</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ===== COMPLETE CSS STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --background-color: #f9fafb;
+            --card-background: #ffffff;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --gradient-start: #4f46e5;
+            --gradient-end: #7c3aed;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .background-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--card-background);
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 30px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            position: relative;
+        }
+
+        .search-section {
+            padding: 30px;
+            background: white;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .input-wrapper:focus-within .input-icon {
+            color: var(--primary-color);
+        }
+
+        input {
+            flex: 1;
+            padding: 16px 20px 16px 45px;
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+            background: var(--background-color);
+        }
+
+        input:hover {
+            border-color: #d1d5db;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+            background: white;
+        }
+
+        input::placeholder {
+            color: #9ca3af;
+        }
+
+        button {
+            padding: 16px 28px;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            box-shadow: var(--shadow-sm);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            filter: brightness(110%);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button i {
+            font-size: 18px;
+        }
+
+        .example-links {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .example-btn {
+            padding: 8px 16px;
+            background: var(--background-color);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: none;
+            background: white;
+            cursor: pointer;
+        }
+
+        .example-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .result-section {
+            padding: 0 30px 30px;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: var(--background-color);
+            border-radius: 16px;
+        }
+
+        .risk-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 600;
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .risk-badge i {
+            font-size: 18px;
+        }
+
+        .risk-badge.safe {
+            color: var(--success-color);
+            border-left: 4px solid var(--success-color);
+        }
+
+        .risk-badge.suspicious {
+            color: var(--warning-color);
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .risk-badge.highrisk {
+            color: var(--danger-color);
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .risk-score {
+            text-align: right;
+        }
+
+        .score-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: block;
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .risk-meter {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 25px;
+        }
+
+        .meter-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .risk-bar-container {
+            width: 100%;
+            height: 12px;
+            background: var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .risk-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 6px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(90deg, var(--success-color), var(--warning-color), var(--danger-color));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .risk-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .meter-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .warnings-section {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 25px;
+        }
+
+        .warnings-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .warnings-header i {
+            color: var(--warning-color);
+            font-size: 20px;
+        }
+
+        .warnings-header h3 {
+            flex: 1;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .warning-count {
+            background: var(--background-color);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .warning-list {
+            list-style: none;
+        }
+
+        .warning-list li {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-primary);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .warning-list li:last-child {
+            border-bottom: none;
+        }
+
+        .warning-list li i {
+            color: var(--danger-color);
+            font-size: 16px;
+            width: 20px;
+        }
+
+        .empty-state {
+            color: var(--text-secondary);
+            justify-content: center;
+        }
+
+        .empty-state i {
+            color: var(--success-color) !important;
+        }
+
+        .nmap-section {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nmap-section h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            font-size: 18px;
+        }
+
+        .nmap-section h3 i {
+            color: var(--primary-color);
+        }
+
+        .nmap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--background-color);
+            border-radius: 12px;
+        }
+
+        .nmap-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .nmap-info strong {
+            color: var(--text-secondary);
+        }
+
+        .status-up {
+            color: var(--success-color);
+            font-weight: 600;
+        }
+
+        .status-down {
+            color: var(--danger-color);
+            font-weight: 600;
+        }
+
+        .nmap-risk-badge {
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-align: center;
+        }
+
+        .nmap-risk-badge.low {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .nmap-risk-badge.medium {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        .nmap-risk-badge.high {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .nmap-risk-badge .risk-score {
+            display: block;
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        .nmap-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--background-color);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card i {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .overall-risk {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .overall-risk h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .overall-risk-meter {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .overall-score {
+            flex: 1;
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .overall-score.low {
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .overall-score.medium {
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .overall-score.high {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .overall-score .score-value {
+            font-size: 48px;
+            font-weight: 700;
+            display: block;
+            line-height: 1;
+        }
+
+        .overall-score.low .score-value {
+            color: var(--success-color);
+        }
+
+        .overall-score.medium .score-value {
+            color: var(--warning-color);
+        }
+
+        .overall-score.high .score-value {
+            color: var(--danger-color);
+        }
+
+        .overall-level {
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 20px;
+        }
+
+        .overall-level.low {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .overall-level.medium {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .overall-level.high {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .recommendation {
+            padding: 20px;
+            background: var(--background-color);
+            border-radius: 12px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recommendation i {
+            font-size: 20px;
+        }
+
+        .recommendation i.fa-check-circle {
+            color: var(--success-color);
+        }
+
+        .recommendation i.fa-exclamation-circle {
+            color: var(--warning-color);
+        }
+
+        .recommendation i.fa-skull-crosswalk {
+            color: var(--danger-color);
+        }
+
+        .error-message {
+            padding: 30px;
+            text-align: center;
+            color: var(--danger-color);
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 12px;
+        }
+
+        .error-message i {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 640px) {
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .input-wrapper {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .example-links {
+                justify-content: center;
+            }
+
+            .result-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .risk-score {
+                text-align: center;
+            }
+
+            .nmap-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .overall-risk-meter {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        button.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        button.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-pattern"></div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h1>Secure scan</h1>
+            <p class="subtitle">Advanced URL analysis with Nmap network scanning</p>
+        </div>
+
+        <div class="search-section">
+            <div class="input-wrapper">
+                <i class="fas fa-link input-icon"></i>
+                <input 
+                    type="text" 
+                    id="urlInput" 
+                    placeholder="Enter URL to analyze (e.g., https://example.com)"
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button onclick="analyzeURL()" id="analyzeBtn">
+                    <i class="fas fa-search"></i>
+                    <span>Analyze</span>
+                </button>
+            </div>
+            <div class="example-links">
+                <span>Try examples:</span>
+                <button class="example-btn" onclick="setExample('https://google.com')">Safe URL</button>
+                <button class="example-btn" onclick="setExample('http://suspicious-login.secure-update.com')">Suspicious</button>
+                <button class="example-btn" onclick="setExample('http://192.168.1.1')">High Risk</button>
+            </div>
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <div class="result-header">
+                <div class="risk-badge" id="riskBadge">
+                    <i class="fas fa-shield"></i>
+                    <span id="riskLevel">Ready to analyze</span>
+                </div>
+                <div class="risk-score" id="riskScoreDisplay">
+                    <span class="score-value" id="riskScore">0/7</span>
+                    <span class="score-label">Risk Score</span>
+                </div>
+            </div>
+
+            <div class="risk-meter">
+                <div class="meter-header">
+                    <span>URL Risk Level</span>
+                    <span id="riskPercentage">0%</span>
+                </div>
+                <div class="risk-bar-container">
+                    <div id="riskBar" class="risk-bar" style="width: 0%"></div>
+                </div>
+                <div class="meter-labels">
+                    <span>Low Risk</span>
+                    <span>Moderate</span>
+                    <span>High Risk</span>
+                </div>
+            </div>
+
+            <div class="warnings-section">
+                <div class="warnings-header">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>URL Risk Factors</h3>
+                    <span class="warning-count" id="warningCount">0</span>
+                </div>
+                <ul id="warningList" class="warning-list">
+                    <li class="empty-state">
+                        <i class="fas fa-check-circle"></i>
+                        <span>No risk factors detected. URL appears safe.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nmap-section" id="nmapResults">
+                <!-- Nmap results will be inserted here -->
+            </div>
+
+            <div class="overall-risk" id="overallRisk">
+                <!-- Overall risk assessment will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

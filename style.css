@@ -1,0 +1,454 @@
+/* Nmap Results Styling */
+.nmap-section {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.nmap-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+    font-size: 18px;
+}
+
+.nmap-section h3 i {
+    color: var(--primary-color);
+}
+
+.nmap-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: var(--background-color);
+    border-radius: 12px;
+}
+
+.nmap-info p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.nmap-info strong {
+    color: var(--text-secondary);
+}
+
+.status-up {
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+.status-down {
+    color: var(--danger-color);
+    font-weight: 600;
+}
+
+.nmap-risk-badge {
+    padding: 10px 20px;
+    border-radius: 30px;
+    text-align: center;
+}
+
+.nmap-risk-badge.low {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+}
+
+.nmap-risk-badge.medium {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning-color);
+}
+
+.nmap-risk-badge.high {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+}
+
+.nmap-risk-badge .risk-score {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    margin-top: 5px;
+}
+
+.nmap-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: var(--background-color);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.stat-card i {
+    font-size: 24px;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.open-ports h4,
+.vulnerabilities h4,
+.risk-factors h4 {
+    margin: 20px 0 15px;
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.ports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.port-card {
+    padding: 12px;
+    border-radius: 8px;
+    background: var(--background-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.port-card.high-risk {
+    border-left: 4px solid var(--danger-color);
+}
+
+.port-number {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.port-service {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.port-version {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 5px;
+}
+
+.vuln-list {
+    list-style: none;
+}
+
+.vuln-item {
+    display: flex;
+    gap: 15px;
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    align-items: flex-start;
+}
+
+.vuln-item:last-child {
+    border-bottom: none;
+}
+
+.vuln-item i {
+    color: var(--danger-color);
+    font-size: 18px;
+    margin-top: 2px;
+}
+
+.vuln-details {
+    flex: 1;
+}
+
+.vuln-details strong {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--text-primary);
+}
+
+.vuln-details p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+.vuln-details small {
+    font-size: 12px;
+    color: var(--warning-color);
+}
+
+.risk-factors ul {
+    list-style: none;
+}
+
+.risk-factors li {
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.risk-factors li i {
+    font-size: 8px;
+    color: var(--primary-color);
+}
+
+.overall-risk {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    margin-top: 20px;
+    box-shadow: var(--shadow-sm);
+}
+
+.overall-risk h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+.overall-risk-meter {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.overall-score {
+    flex: 1;
+    text-align: center;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.overall-score.low {
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.overall-score.medium {
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.overall-score.high {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.overall-score .score-value {
+    font-size: 48px;
+    font-weight: 700;
+    display: block;
+    line-height: 1;
+}
+
+.overall-score.low .score-value {
+    color: var(--success-color);
+}
+
+.overall-score.medium .score-value {
+    color: var(--warning-color);
+}
+
+.overall-score.high .score-value {
+    color: var(--danger-color);
+}
+
+.overall-level {
+    padding: 15px 30px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.overall-level.low {
+    background: var(--success-color);
+    color: white;
+}
+
+.overall-level.medium {
+    background: var(--warning-color);
+    color: white;
+}
+
+.overall-level.high {
+    background: var(--danger-color);
+    color: white;
+}
+
+.recommendation {
+    padding: 20px;
+    background: var(--background-color);
+    border-radius: 12px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.recommendation i {
+    font-size: 20px;
+}
+
+.recommendation i.fa-check-circle {
+    color: var(--success-color);
+}
+
+.recommendation i.fa-exclamation-circle {
+    color: var(--warning-color);
+}
+
+.recommendation i.fa-skull-crosswalk {
+    color: var(--danger-color);
+}
+
+.error-message {
+    padding: 30px;
+    text-align: center;
+    color: var(--danger-color);
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 12px;
+}
+
+.error-message i {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 640px) {
+    .nmap-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .overall-risk-meter {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .ports-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .vuln-item {
+        flex-direction: column;
+    }
+}
+.scan-section {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.scan-section h4 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+    font-size: 16px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.headers-grid {
+    display: grid;
+    gap: 10px;
+}
+
+.header-item {
+    padding: 12px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.header-item.good {
+    background: rgba(16, 185, 129, 0.1);
+    border-left: 4px solid var(--success-color);
+}
+
+.header-item.bad {
+    background: rgba(239, 68, 68, 0.1);
+    border-left: 4px solid var(--danger-color);
+}
+
+.severity {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.severity.high {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger-color);
+}
+
+.severity.medium {
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--warning-color);
+}
+
+.sensitive-files {
+    display: grid;
+    gap: 10px;
+}
+
+.file-item {
+    padding: 12px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.file-item.high {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.file-item.medium {
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.accessible {
+    background: var(--danger-color);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.summary-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
