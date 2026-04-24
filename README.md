@@ -62,12 +62,13 @@ Based on:
 
 ## Tech Stack
 
-- Python
-- Nmap (python-nmap)
-- Requests
-- DNS Resolver
-- WHOIS Library
-- Socket & SSL
+- Python (Security Engine)
+- Nmap (Network Scanning)
+- Node.js (Backend)
+- Express.js
+- EJS (Templating Engine)
+- HTML, CSS, JavaScript (Frontend)
+- Requests, SSL, DNS, WHOIS libraries
 - Multithreading (Concurrent Futures)
 
 ---
